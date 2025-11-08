@@ -1,0 +1,27 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="alert alert-info mt-4">
+        <h3>Información de Diagnóstico</h3>
+        <p><strong>Usuario:</strong> @User.Identity.Name</p>
+        @{
+            var roles = ViewData["UserRoles"] as IList<string>;
+            if (roles != null && roles.Any())
+            {
+                <p><strong>Roles:</strong> @string.Join(", ", roles)</p>
+            }
+            else
+            {
+                <p class="text-danger"><strong>Roles:</strong> El usuario no tiene ningún rol asignado.</p>
+            }
+        }
+    </div>
+}

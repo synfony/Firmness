@@ -1,0 +1,34 @@
+@model Firmness.Web.Models.ModelsView.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<h1 class="mt-4">Dashboard</h1>
+<p class="lead">Métricas principales del sistema.</p>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-header">Total de Productos</div>
+            <div class="card-body">
+                <h5 class="card-title">@Model.TotalProducts</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-header">Total de Clientes</div>
+            <div class="card-body">
+                <h5 class="card-title">@Model.TotalClients</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-info mb-3">
+            <div class="card-header">Total de Ventas</div>
+            <div class="card-body">
+                <h5 class="card-title">@Model.TotalSales</h5>
+            </div>
+        </div>
+    </div>
+</div>
