@@ -12,6 +12,7 @@
     <div class="alert alert-info mt-4">
         <h3>Información de Diagnóstico</h3>
         <p><strong>Usuario:</strong> @User.Identity.Name</p>
+
         @{
             var roles = ViewData["UserRoles"] as IList<string>;
             if (roles != null && roles.Any())
@@ -23,5 +24,20 @@
                 <p class="text-danger"><strong>Roles:</strong> El usuario no tiene ningún rol asignado.</p>
             }
         }
+
+        <a asp-controller="Account" asp-action="Logout"
+           class="btn btn-danger mt-3">Cerrar Sesión</a>
+    </div>
+}
+else
+{
+    <div class="mt-4 text-center">
+        <a asp-controller="Account" asp-action="Login" class="btn btn-primary me-2">
+            Iniciar Sesión
+        </a>
+
+        <a asp-controller="Account" asp-action="Register" class="btn btn-success">
+            Registrarse
+        </a>
     </div>
 }

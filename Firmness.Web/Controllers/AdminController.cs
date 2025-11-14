@@ -25,6 +25,7 @@ namespace Firmness.Web.Controllers
                 TotalClients = await _context.Clients.CountAsync(),
                 TotalSales = await _context.Sales.CountAsync()
             };
+
             return View(viewModel);
         }
     }
