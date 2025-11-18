@@ -38,8 +38,7 @@ namespace Firmness.Web.Data
                 SpecialRole = "SuperAdmin"
             };
 
-            // Add Person only if does not exist
-            if (context.Admins.Any() == false)
+            if (!context.Admins.Any())
             {
                 context.Admins.Add(adminPerson);
                 await context.SaveChangesAsync();
@@ -66,8 +65,45 @@ namespace Firmness.Web.Data
                     await userManager.AddToRoleAsync(adminUser, "Administrator");
                 }
             }
+
+            // ---- Seed Client Person ----
+            var clientPerson = new Client
+            {
+                FirstName = "Test",
+                LastName = "User",
+                DocumentId = "1111",
+                Address = "Client Street",
+                PhoneNumber = "1234567890",
+                PersonType = "Client"
+            };
+
+            if (!context.Clients.Any())
+            {
+                context.Clients.Add(clientPerson);
+                await context.SaveChangesAsync();
+            }
+
+            // ---- Seed Client User ----
+            string clientEmail = "client@example.com";
+            var clientUser = await userManager.FindByEmailAsync(clientEmail);
+
+            if (clientUser == null)
+            {
+                clientUser = new ApplicationUser
+                {
+                    UserName = clientEmail,
+                    Email = clientEmail,
+                    EmailConfirmed = true,
+                    PersonId = clientPerson.Id
+                };
+
+                var result = await userManager.CreateAsync(clientUser, "Client_1234");
+
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(clientUser, "Client");
+                }
+            }
         }
     }
 }
-
-

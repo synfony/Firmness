@@ -5,79 +5,48 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
+// 1️⃣ Configurar DB (PostgreSQL)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Identity configuration using ApplicationUser
+// 2️⃣ Configurar Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-{
-    // Password configuration for development
-    options.Password.RequireDigit = false;
-    options.Password.RequireLowercase = false;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireUppercase = false;
-    options.Password.RequiredLength = 6;
-    options.Password.RequiredUniqueChars = 1;
+    {
+        options.SignIn.RequireConfirmedAccount = false;
+    })
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
 
-    options.SignIn.RequireConfirmedAccount = false; // Disable email confirmation for now
-})
-.AddEntityFrameworkStores<ApplicationDbContext>()
-.AddDefaultTokenProviders()
-.AddDefaultUI();
-
-builder.Services.AddControllersWithViews();
+// 3️⃣ MVC + Razor
+builder.Services.AddControllersWithViews();   // <-- NECESARIO PARA CONTROLADORES
 builder.Services.AddRazorPages();
-
-// Authorization policies
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("Administrator", policy => policy.RequireRole("Administrator"));
-    options.AddPolicy("Client", policy => policy.RequireRole("Client"));
-});
 
 var app = builder.Build();
 
-// Apply migrations and seed initial data
+// 4️⃣ SeedData (roles y usuarios)
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-
-    try
-    {
-        var context = services.GetRequiredService<ApplicationDbContext>();
-        await context.Database.MigrateAsync();
-        await SeedData.Initialize(services);
-    }
-    catch (Exception ex)
-    {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while seeding the database.");
-    }
+    await SeedData.Initialize(services);
 }
 
-// Configure the HTTP request pipeline.
+// 5️⃣ Middlewares
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
 }
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
-// MVC routing
+// 6️⃣ Rutas MVC (IMPORTANTE)
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+// 7️⃣ Razor Pages
 app.MapRazorPages();
 
-await app.RunAsync();
+app.Run();

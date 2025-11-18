@@ -5,38 +5,44 @@ using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 using System.Linq;
 
-namespace Firmness.Web.Controllers;
-
-public class HomeController : Controller
+namespace Firmness.Web.Controllers
 {
-    private readonly ILogger<HomeController> _logger;
-    private readonly UserManager<IdentityUser> _userManager;
-
-    public HomeController(ILogger<HomeController> logger, UserManager<IdentityUser> userManager)
+    public class HomeController : Controller
     {
-        _logger = logger;
-        _userManager = userManager;
-    }
+        private readonly ILogger<HomeController> _logger;
+        private readonly UserManager<ApplicationUser> _userManager; // <-- CAMBIADO
 
-    public async Task<IActionResult> Index()
-    {
-        if (User.Identity.IsAuthenticated)
+        public HomeController(
+            ILogger<HomeController> logger, 
+            UserManager<ApplicationUser> userManager)  // <-- CAMBIADO
         {
-            var user = await _userManager.GetUserAsync(User);
-            var roles = await _userManager.GetRolesAsync(user);
-            ViewData["UserRoles"] = roles;
+            _logger = logger;
+            _userManager = userManager;
         }
-        return View();
-    }
 
-    public IActionResult Privacy()
-    {
-        return View();
-    }
+        public async Task<IActionResult> Index()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                var user = await _userManager.GetUserAsync(User);
+                var roles = await _userManager.GetRolesAsync(user);
+                ViewData["UserRoles"] = roles;
+            }
+            return View();
+        }
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel 
+            { 
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier 
+            });
+        }
     }
 }
