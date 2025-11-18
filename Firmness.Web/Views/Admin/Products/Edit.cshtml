@@ -1,0 +1,45 @@
+@model Firmness.Web.Models.Product
+
+@{
+    ViewData["Title"] = "Editar Producto";
+}
+
+<h2 class="mt-4">Editar Producto</h2>
+
+<form asp-action="Edit">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label class="form-label">Nombre</label>
+        <input asp-for="Name" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Descripción</label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Precio</label>
+        <input asp-for="Price" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Stock</label>
+        <input asp-for="Stock" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">URL Imagen</label>
+        <input asp-for="ImageUrl" class="form-control" />
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+    {
+        <p>Vista previa:</p>
+        <img src="@Model.ImageUrl" width="150" class="img-thumbnail" />
+    }
+
+    <button type="submit" class="btn btn-primary mt-3">Actualizar</button>
+    <a asp-action="Index" class="btn btn-secondary mt-3">Cancelar</a>
+</form>

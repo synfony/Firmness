@@ -1,0 +1,43 @@
+@model IEnumerable<Firmness.Web.Models.Product>
+
+@{
+    ViewData["Title"] = "Productos";
+}
+
+<h2 class="mt-4">Gestión de Productos</h2>
+
+<a asp-action="Create" class="btn btn-primary mb-3">Crear Producto</a>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+    <tr>
+        <th>Nombre</th>
+        <th>Descripción</th>
+        <th>Precio</th>
+        <th>Stock</th>
+        <th>Imagen</th>
+        <th style="width:150px;">Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Name</td>
+            <td>@item.Description</td>
+            <td>$@item.Price</td>
+            <td>@item.Stock</td>
+            <td>
+                @if (!string.IsNullOrEmpty(item.ImageUrl))
+                {
+                    <img src="@item.ImageUrl" width="50" class="img-thumbnail" />
+                }
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Editar</a>
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm mt-1">Borrar</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
