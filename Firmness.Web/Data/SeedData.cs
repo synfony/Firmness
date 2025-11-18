@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
-using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Threading.Tasks;
+using Firmness.Web.Models;
 
 namespace Firmness.Web.Data
 {
@@ -9,35 +11,63 @@ namespace Firmness.Web.Data
         public static async Task Initialize(IServiceProvider serviceProvider)
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var context = serviceProvider.GetRequiredService<ApplicationDbContext>();
 
-            // Seed Roles
-            string[] roleNames = { "Administrator", "Client" };
-            foreach (var roleName in roleNames)
+            // Ensure database exists
+            await context.Database.EnsureCreatedAsync();
+
+            // ---- Seed Roles ----
+            string[] roles = { "Administrator", "Client" };
+
+            foreach (var role in roles)
             {
-                var roleExist = await roleManager.RoleExistsAsync(roleName);
-                if (!roleExist)
-                {
-                    await roleManager.CreateAsync(new IdentityRole(roleName));
-                }
+                if (!await roleManager.RoleExistsAsync(role))
+                    await roleManager.CreateAsync(new IdentityRole(role));
             }
 
-            // Seed Administrator User
-            var adminUser = await userManager.FindByEmailAsync("admin@example.com");
+            // ---- Seed Admin Person ----
+            var adminPerson = new Admin
+            {
+                FirstName = "System",
+                LastName = "Administrator",
+                DocumentId = "0000",
+                Address = "N/A",
+                PhoneNumber = "0000000000",
+                PersonType = "Admin",
+                SpecialRole = "SuperAdmin"
+            };
+
+            // Add Person only if does not exist
+            if (context.Admins.Any() == false)
+            {
+                context.Admins.Add(adminPerson);
+                await context.SaveChangesAsync();
+            }
+
+            // ---- Seed Admin User ----
+            string adminEmail = "admin@example.com";
+            var adminUser = await userManager.FindByEmailAsync(adminEmail);
+
             if (adminUser == null)
             {
-                var newAdminUser = new IdentityUser
+                adminUser = new ApplicationUser
                 {
-                    UserName = "admin@example.com",
-                    Email = "admin@example.com",
-                    EmailConfirmed = true
+                    UserName = adminEmail,
+                    Email = adminEmail,
+                    EmailConfirmed = true,
+                    PersonId = adminPerson.Id
                 };
-                var result = await userManager.CreateAsync(newAdminUser, "Admin_1234");
+
+                var result = await userManager.CreateAsync(adminUser, "Admin_1234");
+
                 if (result.Succeeded)
                 {
-                    await userManager.AddToRoleAsync(newAdminUser, "Administrator");
+                    await userManager.AddToRoleAsync(adminUser, "Administrator");
                 }
             }
         }
     }
 }
+
+
