@@ -4,39 +4,45 @@
     ViewData["Title"] = "Crear Producto";
 }
 
-<h2 class="mt-4">Crear Producto</h2>
+<h2 class="mb-4">Crear Producto</h2>
 
-<form asp-action="Create">
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+
     <div class="mb-3">
-        <label class="form-label">Nombre</label>
+        <label asp-for="Name" class="form-label"></label>
         <input asp-for="Name" class="form-control" />
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Descripción</label>
+        <label asp-for="Description" class="form-label"></label>
         <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Precio</label>
+        <label asp-for="Price" class="form-label"></label>
         <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Stock</label>
+        <label asp-for="Stock" class="form-label"></label>
         <input asp-for="Stock" class="form-control" />
+        <span asp-validation-for="Stock" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">URL de imagen (opcional)</label>
-        <input asp-for="ImageUrl" class="form-control" />
+        <label class="form-label">Imagen del producto</label>
+        <input type="file" name="ImageFile" class="form-control" />
     </div>
 
     <button type="submit" class="btn btn-success">Guardar</button>
     <a asp-action="Index" class="btn btn-secondary">Volver</a>
+
 </form>
 
-@section Scripts{
-    <partial name="_ValidationScriptsPartial" />
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+

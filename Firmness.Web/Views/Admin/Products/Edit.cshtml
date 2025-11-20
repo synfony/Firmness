@@ -4,42 +4,54 @@
     ViewData["Title"] = "Editar Producto";
 }
 
-<h2 class="mt-4">Editar Producto</h2>
+<h2 class="mb-4">Editar Producto</h2>
 
-<form asp-action="Edit">
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+
     <input type="hidden" asp-for="Id" />
 
     <div class="mb-3">
-        <label class="form-label">Nombre</label>
+        <label asp-for="Name" class="form-label"></label>
         <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Descripción</label>
+        <label asp-for="Description" class="form-label"></label>
         <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Precio</label>
+        <label asp-for="Price" class="form-label"></label>
         <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Stock</label>
+        <label asp-for="Stock" class="form-label"></label>
         <input asp-for="Stock" class="form-control" />
+        <span asp-validation-for="Stock" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">URL Imagen</label>
-        <input asp-for="ImageUrl" class="form-control" />
+        <label class="form-label">Imagen actual</label><br />
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <img src="@Model.ImageUrl" width="120" class="rounded border mb-2" />
+        }
     </div>
 
-    @if (!string.IsNullOrEmpty(Model.ImageUrl))
-    {
-        <p>Vista previa:</p>
-        <img src="@Model.ImageUrl" width="150" class="img-thumbnail" />
-    }
+    <div class="mb-3">
+        <label class="form-label">Nueva imagen (opcional)</label>
+        <input type="file" name="ImageFile" class="form-control" />
+    </div>
 
-    <button type="submit" class="btn btn-primary mt-3">Actualizar</button>
-    <a asp-action="Index" class="btn btn-secondary mt-3">Cancelar</a>
+    <button type="submit" class="btn btn-warning">Actualizar</button>
+    <a asp-action="Index" class="btn btn-secondary">Volver</a>
+
 </form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

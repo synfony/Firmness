@@ -4,19 +4,22 @@
     ViewData["Title"] = "Eliminar Producto";
 }
 
-<h2 class="mt-4 text-danger">¿Eliminar Producto?</h2>
+<h2 class="mb-4 text-danger">¿Eliminar Producto?</h2>
 
-<div class="alert alert-danger">
-    ¿Estás seguro de que deseas eliminar: <strong>@Model.Name</strong>?
+<div class="alert alert-warning">
+    ¿Seguro que deseas eliminar <strong>@Model.Name</strong>?
 </div>
 
-@if (!string.IsNullOrEmpty(Model.ImageUrl))
-{
-    <img src="@Model.ImageUrl" width="150" class="img-thumbnail mb-3" />
-}
+<div class="mb-3">
+    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+    {
+        <img src="@Model.ImageUrl" width="150" class="rounded border" />
+    }
+</div>
 
-<form asp-action="DeleteConfirmed">
+<form asp-action="Delete">
     <input type="hidden" asp-for="Id" />
+
     <button type="submit" class="btn btn-danger">Eliminar</button>
     <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
 </form>
