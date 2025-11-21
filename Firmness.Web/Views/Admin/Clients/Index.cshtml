@@ -1,0 +1,38 @@
+@model IEnumerable<Firmness.Web.Models.Client>
+
+@{
+    ViewData["Title"] = "Clientes";
+}
+
+<h2 class="mb-4">Lista de Clientes</h2>
+
+<table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+        <th>Nombre</th>
+        <th>Documento</th>
+        <th>Dirección</th>
+        <th>Teléfono</th>
+        <th>Historial de Compras</th>
+        <th>Acciones</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    @foreach (var c in Model)
+    {
+        <tr>
+            <td>@c.FirstName @c.LastName</td>
+            <td>@c.DocumentId</td>
+            <td>@c.Address</td>
+            <td>@c.PhoneNumber</td>
+            <td>@c.PurchaseHistory</td>
+
+            <td>
+                <a asp-action="Edit" asp-route-id="@c.Id" class="btn btn-warning btn-sm">Editar</a>
+                <a asp-action="Delete" asp-route-id="@c.Id" class="btn btn-danger btn-sm">Eliminar</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
