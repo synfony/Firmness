@@ -10,11 +10,11 @@ namespace Firmness.Web.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly UserManager<ApplicationUser> _userManager; // <-- CAMBIADO
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public HomeController(
             ILogger<HomeController> logger, 
-            UserManager<ApplicationUser> userManager)  // <-- CAMBIADO
+            UserManager<ApplicationUser> userManager)
         {
             _logger = logger;
             _userManager = userManager;
@@ -22,11 +22,14 @@ namespace Firmness.Web.Controllers
 
         public async Task<IActionResult> Index()
         {
-            if (User.Identity.IsAuthenticated)
+            if (User.Identity?.IsAuthenticated == true)
             {
                 var user = await _userManager.GetUserAsync(User);
-                var roles = await _userManager.GetRolesAsync(user);
-                ViewData["UserRoles"] = roles;
+                if (user != null)
+                {
+                    var roles = await _userManager.GetRolesAsync(user);
+                    ViewData["UserRoles"] = roles;
+                }
             }
             return View();
         }

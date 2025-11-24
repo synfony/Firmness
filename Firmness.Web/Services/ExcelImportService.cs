@@ -22,18 +22,29 @@ namespace Firmness.Web.Services
         public async Task<List<string>> ImportData(Stream stream)
         {
             var errorLog = new List<string>();
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-
+            
             using (var package = new ExcelPackage(stream))
             {
-                var worksheet = package.Workbook.Worksheets.First();
-                var rowCount = worksheet.Dimension.Rows;
-                var colCount = worksheet.Dimension.Columns;
+                var worksheet = package.Workbook.Worksheets.FirstOrDefault();
+                if (worksheet == null)
+                {
+                    errorLog.Add("El archivo de Excel no contiene ninguna hoja de cálculo.");
+                    return errorLog;
+                }
+
+                var rowCount = worksheet.Dimension?.Rows ?? 0;
+                var colCount = worksheet.Dimension?.Columns ?? 0;
+
+                if (rowCount == 0 || colCount == 0)
+                {
+                    errorLog.Add("La hoja de cálculo está vacía.");
+                    return errorLog;
+                }
 
                 var headers = new List<string>();
                 for (int col = 1; col <= colCount; col++)
                 {
-                    headers.Add(worksheet.Cells[1, col].Value.ToString().Trim().ToLower());
+                    headers.Add(worksheet.Cells[1, col].Value?.ToString()?.Trim().ToLower() ?? string.Empty);
                 }
 
                 for (int row = 2; row <= rowCount; row++)
@@ -41,7 +52,7 @@ namespace Firmness.Web.Services
                     var rowData = new Dictionary<string, string>();
                     for (int col = 1; col <= colCount; col++)
                     {
-                        rowData[headers[col - 1]] = worksheet.Cells[row, col].Value?.ToString().Trim();
+                        rowData[headers[col - 1]] = worksheet.Cells[row, col].Value?.ToString()?.Trim() ?? string.Empty;
                     }
 
                     await ProcessRow(rowData, row, errorLog);
@@ -98,10 +109,10 @@ namespace Firmness.Web.Services
             bool isNew = client == null;
             client ??= new Client { DocumentId = documentId, PersonType = "Client" };
 
-            client.FirstName = rowData.GetValueOrDefault("firstname");
-            client.LastName = rowData.GetValueOrDefault("lastname");
-            client.Address = rowData.GetValueOrDefault("address");
-            client.PhoneNumber = rowData.GetValueOrDefault("phonenumber");
+            client.FirstName = rowData.GetValueOrDefault("firstname") ?? string.Empty;
+            client.LastName = rowData.GetValueOrDefault("lastname") ?? string.Empty;
+            client.Address = rowData.GetValueOrDefault("address") ?? string.Empty;
+            client.PhoneNumber = rowData.GetValueOrDefault("phonenumber") ?? string.Empty;
 
             if (isNew)
             {
@@ -126,7 +137,7 @@ namespace Firmness.Web.Services
             bool isNew = product == null;
             product ??= new Product { Name = name };
 
-            product.Description = rowData.GetValueOrDefault("description");
+            product.Description = rowData.GetValueOrDefault("description") ?? string.Empty;
             if (decimal.TryParse(rowData.GetValueOrDefault("price"), out var price))
             {
                 product.Price = price;

@@ -2,6 +2,6 @@ namespace Firmness.Web.Models
 {
     public class Admin : Person
     {
-        public string SpecialRole { get; set; }
+        public string SpecialRole { get; set; } = string.Empty;
     }
 }

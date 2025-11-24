@@ -1,52 +1,52 @@
 using Firmness.Web.Data;
-using Firmness.Web.Models;
+using Firmness.Web.Models; // <-- Add this using statement for ApplicationUser
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
+
+// Set EPPlus license context for non-commercial use (correct for version 6.x)
+ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1️⃣ Configurar DB (PostgreSQL)
+// Add services to the container.
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
+// UseNpgsql as the project is configured for PostgreSQL
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(connectionString));
 
-// 2️⃣ Configurar Identity
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-    {
-        options.SignIn.RequireConfirmedAccount = false;
-    })
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-// 3️⃣ MVC + Razor
-builder.Services.AddControllersWithViews();   // <-- NECESARIO PARA CONTROLADORES
-builder.Services.AddRazorPages();
+// Use ApplicationUser instead of IdentityUser
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// 4️⃣ SeedData (roles y usuarios)
-using (var scope = app.Services.CreateScope())
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
 {
-    var services = scope.ServiceProvider;
-    await SeedData.Initialize(services);
+    app.UseMigrationsEndPoint();
 }
-
-// 5️⃣ Middlewares
-if (!app.Environment.IsDevelopment())
+else
 {
     app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
 }
 
+app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 app.UseRouting();
-app.UseAuthentication();
+
 app.UseAuthorization();
 
-// 6️⃣ Rutas MVC (IMPORTANTE)
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
-// 7️⃣ Razor Pages
 app.MapRazorPages();
 
 app.Run();

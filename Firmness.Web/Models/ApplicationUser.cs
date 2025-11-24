@@ -4,8 +4,7 @@ namespace Firmness.Web.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        public int? PersonId { get; set; }   // Optional link to Person table
-        public Person Person { get; set; }
+        public int PersonId { get; set; }
+        public Person Person { get; set; } = null!;
     }
 }
-

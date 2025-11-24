@@ -1,5 +1,6 @@
 using Firmness.Web.Data;
 using Firmness.Web.Models;
+using Firmness.Web.Models.ModelsView;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -94,12 +95,14 @@ namespace Firmness.Web.Controllers
             if (result.Succeeded)
             {
                 var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user != null)
+                {
+                    if (await _userManager.IsInRoleAsync(user, "Administrator"))
+                        return RedirectToAction("Index", "Admin");
 
-                if (await _userManager.IsInRoleAsync(user, "Administrator"))
-                    return RedirectToAction("Index", "Admin");
-
-                if (await _userManager.IsInRoleAsync(user, "Client"))
-                    return RedirectToAction("Index", "Home");
+                    if (await _userManager.IsInRoleAsync(user, "Client"))
+                        return RedirectToAction("Index", "Home");
+                }
             }
 
             ModelState.AddModelError("", "Invalid credentials");
