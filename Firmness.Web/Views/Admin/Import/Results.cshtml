@@ -1,0 +1,22 @@
+@{
+    ViewData["Title"] = "Resultados de la Importación";
+}
+
+<h2>Resultados de la Importación</h2>
+
+@if (ViewBag.ErrorLog != null && ViewBag.ErrorLog.Count > 0)
+{
+    <h3>Errores y Advertencias:</h3>
+    <ul>
+        @foreach (var error in ViewBag.ErrorLog)
+        {
+            <li>@error</li>
+        }
+    </ul>
+}
+else
+{
+    <p>La importación se completó sin errores.</p>
+}
+
+<a asp-action="Index" class="btn btn-secondary">Volver</a>

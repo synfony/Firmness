@@ -3,10 +3,13 @@
     ViewData["Title"] = "Dashboard";
 }
 
-<h1 class="mt-4">Dashboard</h1>
-<p class="lead">Métricas principales del sistema.</p>
+<div class="d-flex justify-content-between align-items-center mt-4">
+    <h1 class="m-0">Dashboard</h1>
+    <a asp-controller="Import" asp-action="Index" class="btn btn-primary">Importar Datos</a>
+</div>
+<p class="lead mt-2">Métricas principales del sistema.</p>
 
-<div class="row">
+<div class="row mt-4">
     <div class="col-md-4">
         <div class="card text-white bg-primary mb-3">
             <div class="card-header">Total de Productos</div>
