@@ -49,12 +49,34 @@ namespace Firmness.Web.Controllers.Admin
             if (id != client.Id)
                 return BadRequest();
 
+            // Fetch the existing client from the database
+            var dbClient = await _context.Clients.FindAsync(id);
+            if (dbClient == null)
+            {
+                return NotFound();
+            }
+
+            // Set the PersonType to ensure it's not lost
+            client.PersonType = dbClient.PersonType;
+
+            // Manually trigger validation after setting the PersonType
+            ModelState.Clear();
+            TryValidateModel(client);
+
             if (!ModelState.IsValid)
                 return View("~/Views/Admin/Clients/Edit.cshtml", client);
 
             try
             {
-                _context.Update(client);
+                // Update properties from the submitted model
+                dbClient.FirstName = client.FirstName;
+                dbClient.LastName = client.LastName;
+                dbClient.DocumentId = client.DocumentId;
+                dbClient.Address = client.Address;
+                dbClient.PhoneNumber = client.PhoneNumber;
+                dbClient.PurchaseHistory = client.PurchaseHistory;
+
+                _context.Update(dbClient);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)

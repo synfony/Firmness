@@ -8,8 +8,10 @@
 
 <form asp-action="Edit" asp-controller="CrudClients" asp-route-id="@Model.Id" method="post">
     @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="text-danger"></div>
 
     <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="PersonType" />
 
     <div class="mb-3">
         <label class="form-label">Nombre</label>
@@ -37,8 +39,8 @@
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Historial de Compras (solo lectura)</label>
-        <textarea asp-for="PurchaseHistory" class="form-control" readonly></textarea>
+        <label class="form-label">Historial de Compras</label>
+        <textarea asp-for="PurchaseHistory" class="form-control"></textarea>
     </div>
 
     <button type="submit" class="btn btn-success">Guardar Cambios</button>
