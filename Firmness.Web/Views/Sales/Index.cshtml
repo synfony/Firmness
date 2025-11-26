@@ -1,0 +1,38 @@
+@model IEnumerable<Firmness.Web.Models.Sale>
+
+@{
+    ViewData["Title"] = "Ventas";
+}
+
+<h2>Ventas</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Crear Nueva Venta</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Fecha</th>
+            <th>Recibo</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@(item.Client?.FirstName ?? "N/A") @(item.Client?.LastName ?? "")</td>
+                <td>@item.SaleDate.ToShortDateString()</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.ReceiptUrl))
+                    {
+                        <a href="@item.ReceiptUrl" target="_blank">Descargar PDF</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

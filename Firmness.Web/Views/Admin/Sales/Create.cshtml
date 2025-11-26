@@ -1,0 +1,125 @@
+@model Firmness.Web.Models.Sale
+@using System.Text.Json;
+
+@{
+    ViewData["Title"] = "Crear Venta";
+    var products = ViewBag.Products as List<Firmness.Web.Models.Product> ?? new List<Firmness.Web.Models.Product>();
+    var clients = ViewBag.Clients as List<Firmness.Web.Models.Client> ?? new List<Firmness.Web.Models.Client>();
+}
+
+<h2>Crear Venta</h2>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="form-group mb-3">
+        <label asp-for="ClientId" class="control-label">Cliente</label>
+        <select asp-for="ClientId" class="form-control" asp-items="@(new SelectList(clients, "Id", "FirstName"))"></select>
+    </div>
+
+    <h4>Productos</h4>
+    <div id="sale-details">
+        @if (Model != null && Model.SaleDetails != null)
+        {
+            for (int i = 0; i < Model.SaleDetails.Count; i++)
+            {
+                <div class="row mb-2 product-row">
+                    <div class="col-md-5">
+                        <select name="SaleDetails[@i].ProductId" class="form-control product-select" asp-items="@(new SelectList(products, "Id", "Name", Model.SaleDetails[i].ProductId))"></select>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="number" name="SaleDetails[@i].Quantity" class="form-control quantity-input" placeholder="Cantidad" value="@Model.SaleDetails[i].Quantity" min="1" />
+                    </div>
+                    <div class="col-md-3">
+                        <input type="number" step="0.01" name="SaleDetails[@i].UnitPrice" class="form-control unit-price-input" placeholder="Precio Unitario" value="@Model.SaleDetails[i].UnitPrice.ToString("F2")" readonly />
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    <button type="button" id="add-product" class="btn btn-secondary mt-2">Añadir Producto</button>
+    <hr />
+
+    <div class="text-end">
+        <h3>Total Venta: <span id="total-sale-amount">$0.00</span></h3>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Guardar Venta</button>
+</form>
+
+@section Scripts {
+    <script>
+        var productData = @Html.Raw(JsonSerializer.Serialize(products.Select(p => new { p.Id, p.Name, p.Price, p.Stock })));
+
+        function updateTotalPrice() {
+            let total = 0;
+            document.querySelectorAll('.product-row').forEach(row => {
+                const quantity = parseFloat(row.querySelector('.quantity-input').value) || 0;
+                const price = parseFloat(row.querySelector('.unit-price-input').value) || 0;
+                total += quantity * price;
+            });
+            document.getElementById('total-sale-amount').textContent = '$' + total.toFixed(2);
+        }
+
+        function handleProductChange(selectElement) {
+            const selectedProductId = selectElement.value;
+            const product = productData.find(p => p.Id == selectedProductId);
+            const row = selectElement.closest('.product-row');
+
+            if (product) {
+                const priceInput = row.querySelector('.unit-price-input');
+                const quantityInput = row.querySelector('.quantity-input');
+
+                priceInput.value = product.Price.toFixed(2);
+                quantityInput.setAttribute('max', product.Stock);
+                
+                if (parseInt(quantityInput.value) > product.Stock) {
+                    quantityInput.value = product.Stock;
+                }
+            }
+            updateTotalPrice();
+        }
+
+        document.getElementById('add-product').addEventListener('click', function () {
+            const detailsContainer = document.getElementById('sale-details');
+            const index = detailsContainer.children.length;
+            
+            let productOptions = '<option value="">Seleccione un producto</option>';
+            productData.forEach(p => {
+                productOptions += `<option value="${p.Id}">${p.Name}</option>`;
+            });
+
+            const newRow = `
+                <div class="row mb-2 product-row">
+                    <div class="col-md-5">
+                        <select name="SaleDetails[${index}].ProductId" class="form-control product-select">${productOptions}</select>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="number" name="SaleDetails[${index}].Quantity" class="form-control quantity-input" placeholder="Cantidad" value="1" min="1" />
+                    </div>
+                    <div class="col-md-3">
+                        <input type="number" step="0.01" name="SaleDetails[${index}].UnitPrice" class="form-control unit-price-input" placeholder="Precio Unitario" readonly />
+                    </div>
+                </div>`;
+            detailsContainer.insertAdjacentHTML('beforeend', newRow);
+        });
+
+        document.getElementById('sale-details').addEventListener('change', function(e) {
+            if (e.target && e.target.classList.contains('product-select')) {
+                handleProductChange(e.target);
+            } else if (e.target && e.target.classList.contains('quantity-input')) {
+                updateTotalPrice();
+            }
+        });
+        
+        document.getElementById('sale-details').addEventListener('input', function(e) {
+            if (e.target && e.target.classList.contains('quantity-input')) {
+                updateTotalPrice();
+            }
+        });
+
+        // Initial calculation on page load (for validation postbacks)
+        updateTotalPrice();
+    </script>
+}

@@ -4,9 +4,13 @@
     ViewData["Title"] = "Productos";
 }
 
-<h2 class="mb-4">Productos</h2>
-
-<a asp-action="Create" class="btn btn-primary mb-3">Crear nuevo producto</a>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="m-0">Productos</h2>
+    <div>
+        <a asp-action="Create" class="btn btn-primary">Crear nuevo producto</a>
+        <a asp-controller="Export" asp-action="ExportProductsToExcel" class="btn btn-success">Exportar a Excel</a>
+    </div>
+</div>
 
 <table class="table table-striped">
     <thead>
