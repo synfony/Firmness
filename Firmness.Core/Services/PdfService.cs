@@ -1,11 +1,11 @@
-using Firmness.Web.Models;
+using Firmness.Core.Models;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using System.IO;
 using System.Linq;
 
-namespace Firmness.Web.Services
+namespace Firmness.Core.Services
 {
     public class PdfService
     {
@@ -43,7 +43,7 @@ namespace Firmness.Web.Services
                             {
                                 table.ColumnsDefinition(columns =>
                                 {
-                                    columns.RelativeColumn();
+                                    columns.RelativeColumn(2);
                                     columns.RelativeColumn();
                                     columns.RelativeColumn();
                                     columns.RelativeColumn();
@@ -52,25 +52,37 @@ namespace Firmness.Web.Services
                                 table.Header(header =>
                                 {
                                     header.Cell().Text("Producto");
-                                    header.Cell().Text("Cantidad");
-                                    header.Cell().Text("Precio Unitario");
-                                    header.Cell().Text("Total");
+                                    header.Cell().AlignRight().Text("Cantidad");
+                                    header.Cell().AlignRight().Text("Precio Unitario");
+                                    header.Cell().AlignRight().Text("Total");
                                 });
 
-                                decimal total = 0;
-                                foreach (var item in sale.SaleDetails)
+                                decimal subtotal = 0;
+                                if (sale.SaleDetails != null)
                                 {
-                                    var itemTotal = item.Quantity * item.UnitPrice;
-                                    table.Cell().Text(item.Product?.Name ?? "N/A");
-                                    table.Cell().Text(item.Quantity.ToString());
-                                    table.Cell().Text($"${item.UnitPrice:N2}");
-                                    table.Cell().Text($"${itemTotal:N2}");
-                                    total += itemTotal;
+                                    foreach (var item in sale.SaleDetails)
+                                    {
+                                        var itemTotal = item.Quantity * item.UnitPrice;
+                                        table.Cell().Text(item.Product?.Name ?? "N/A");
+                                        table.Cell().AlignRight().Text(item.Quantity.ToString());
+                                        table.Cell().AlignRight().Text($"${item.UnitPrice:N2}");
+                                        table.Cell().AlignRight().Text($"${itemTotal:N2}");
+                                        subtotal += itemTotal;
+                                    }
                                 }
 
-                                column.Item().PaddingTop(20).AlignRight().Text($"Total: ${total:N2}");
-                                column.Item().AlignRight().Text($"IVA (19%): ${total * 0.19m:N2}");
-                                column.Item().AlignRight().Text(text => text.Span($"Total a Pagar: ${total * 1.19m:N2}").SemiBold());
+                                const decimal ivaRate = 0.19m;
+                                var iva = subtotal * ivaRate;
+                                var grandTotal = subtotal + iva;
+
+                                table.Cell().ColumnSpan(3).AlignRight().Text("Subtotal");
+                                table.Cell().AlignRight().Text($"${subtotal:N2}");
+
+                                table.Cell().ColumnSpan(3).AlignRight().Text($"IVA ({ivaRate:P0})");
+                                table.Cell().AlignRight().Text($"${iva:N2}");
+
+                                table.Cell().ColumnSpan(3).AlignRight().Text(text => text.Span("Total a Pagar").SemiBold());
+                                table.Cell().AlignRight().Text(text => text.Span($"${grandTotal:N2}").SemiBold());
                             });
                         });
 

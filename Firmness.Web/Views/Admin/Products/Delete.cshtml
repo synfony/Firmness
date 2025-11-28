@@ -1,23 +1,17 @@
-@model Firmness.Web.Models.Product
+@model Firmness.Core.Models.Product
 
 @{
     ViewData["Title"] = "Eliminar Producto";
 }
 
-<h2 class="mb-4 text-danger">¿Eliminar Producto?</h2>
+<h2>¿Eliminar Producto?</h2>
 
-<div class="alert alert-warning">
-    ¿Seguro que deseas eliminar <strong>@Model.Name</strong>?
+<div class="alert alert-danger">
+    ¿Estás seguro de que quieres eliminar el producto <strong>@Model.Name</strong>?
 </div>
 
-<div class="mb-3">
-    @if (!string.IsNullOrEmpty(Model.ImageUrl))
-    {
-        <img src="@Model.ImageUrl" width="150" class="rounded border" />
-    }
-</div>
-
-<form asp-action="Delete">
+<form asp-action="Delete" method="post">
+    @Html.AntiForgeryToken()
     <input type="hidden" asp-for="Id" />
 
     <button type="submit" class="btn btn-danger">Eliminar</button>

@@ -1,0 +1,41 @@
+# --- Base SDK Image ---
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /source
+
+# Copy all project files and the solution file
+COPY *.sln .
+COPY Firmness.Core/*.csproj ./Firmness.Core/
+COPY Firmness.ViewModels/*.csproj ./Firmness.ViewModels/
+COPY Firmness.Web/*.csproj ./Firmness.Web/
+COPY Firmness.Tests/*.csproj ./Firmness.Tests/
+COPY FIrmnessAPI/*.csproj ./FIrmnessAPI/
+
+# Restore dependencies for the entire solution
+RUN dotnet restore
+
+# Copy the rest of the source code
+COPY . .
+
+# --- Publish Web App ---
+FROM build AS build-web
+WORKDIR /source/Firmness.Web
+RUN dotnet publish -c Release -o /app/publish_web
+
+# --- Publish API ---
+FROM build AS build-api
+WORKDIR /source/FIrmnessAPI
+RUN dotnet publish -c Release -o /app/publish_api
+
+# --- Final Web App Image ---
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final-web
+WORKDIR /app
+COPY --from=build-web /app/publish_web .
+EXPOSE 8080
+ENTRYPOINT ["dotnet", "Firmness.Web.dll"]
+
+# --- Final API Image ---
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final-api
+WORKDIR /app
+COPY --from=build-api /app/publish_api .
+EXPOSE 8081
+ENTRYPOINT ["dotnet", "FIrmnessAPI.dll"]

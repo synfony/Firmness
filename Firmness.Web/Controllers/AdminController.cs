@@ -1,5 +1,5 @@
-using Firmness.Web.Data;
-using Firmness.Web.Models.ModelsView;
+using Firmness.Core.Data;
+using Firmness.ViewModels; // <-- Change this using statement
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

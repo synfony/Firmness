@@ -1,10 +1,10 @@
-@model Firmness.Web.Models.Sale
+@model Firmness.Core.Models.Sale
 @using System.Text.Json;
 
 @{
     ViewData["Title"] = "Crear Venta";
-    var products = ViewBag.Products as List<Firmness.Web.Models.Product> ?? new List<Firmness.Web.Models.Product>();
-    var clients = ViewBag.Clients as List<Firmness.Web.Models.Client> ?? new List<Firmness.Web.Models.Client>();
+    var products = ViewBag.Products as List<Firmness.Core.Models.Product> ?? new List<Firmness.Core.Models.Product>();
+    var clients = ViewBag.Clients as List<Firmness.Core.Models.Client> ?? new List<Firmness.Core.Models.Client>();
 }
 
 <h2>Crear Venta</h2>

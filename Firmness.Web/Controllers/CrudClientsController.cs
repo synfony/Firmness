@@ -1,5 +1,5 @@
-using Firmness.Web.Data;
-using Firmness.Web.Models;
+using Firmness.Core.Data;
+using Firmness.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -49,17 +49,14 @@ namespace Firmness.Web.Controllers.Admin
             if (id != client.Id)
                 return BadRequest();
 
-            // Fetch the existing client from the database
             var dbClient = await _context.Clients.FindAsync(id);
             if (dbClient == null)
             {
                 return NotFound();
             }
 
-            // Set the PersonType to ensure it's not lost
             client.PersonType = dbClient.PersonType;
 
-            // Manually trigger validation after setting the PersonType
             ModelState.Clear();
             TryValidateModel(client);
 
@@ -68,7 +65,6 @@ namespace Firmness.Web.Controllers.Admin
 
             try
             {
-                // Update properties from the submitted model
                 dbClient.FirstName = client.FirstName;
                 dbClient.LastName = client.LastName;
                 dbClient.DocumentId = client.DocumentId;
@@ -91,7 +87,7 @@ namespace Firmness.Web.Controllers.Admin
                 }
             }
 
-            return RedirectToAction("Index", "CrudClients", new { area = "Admin" });
+            return RedirectToAction(nameof(Index));
         }
 
         // ============================
@@ -122,7 +118,7 @@ namespace Firmness.Web.Controllers.Admin
             _context.Clients.Remove(client);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Index", "CrudClients", new { area = "Admin" });
+            return RedirectToAction(nameof(Index));
         }
     }
 }

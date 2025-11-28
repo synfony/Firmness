@@ -1,31 +1,31 @@
-# Stage 1: Build the application
+# --- Build Stage ---
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /source
 
-# Copy solution and project files to restore dependencies
+# 1. Copy all project files and the solution file
 COPY *.sln .
 COPY Firmness.Web/*.csproj ./Firmness.Web/
 COPY Firmness.Tests/*.csproj ./Firmness.Tests/
+COPY FIrmnessAPI/*.csproj ./FIrmnessAPI/
+
+# 2. Restore dependencies for the entire solution
 RUN dotnet restore
 
-# Copy the rest of the source code
+# 3. Copy the rest of the source code
 COPY . .
 
-# Run tests
+# 4. Run tests (optional, but good practice)
 WORKDIR /source/Firmness.Tests
 RUN dotnet test
 
-# Publish the application
+# 5. Publish only the specific project for this Dockerfile
 WORKDIR /source/Firmness.Web
-RUN dotnet publish -c release -o /app --no-restore
+RUN dotnet publish "Firmness.Web.csproj" -c Release -o /app/publish --no-restore
 
-# Stage 2: Create the final runtime image
+# --- Final Stage ---
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
-COPY --from=build /app ./
+COPY --from=build /app/publish .
 
-# Expose the port the app will run on
 EXPOSE 8080
-
-# Set the entrypoint for the container
 ENTRYPOINT ["dotnet", "Firmness.Web.dll"]

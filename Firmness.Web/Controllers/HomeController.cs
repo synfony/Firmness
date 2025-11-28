@@ -4,6 +4,7 @@ using Firmness.Web.Models;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 using System.Linq;
+using Firmness.Core.Models;
 
 namespace Firmness.Web.Controllers
 {

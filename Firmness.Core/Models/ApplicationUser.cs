@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
+using Firmness.Core.Models;
 
-namespace Firmness.Web.Models
+namespace Firmness.Core.Models
 {
     public class ApplicationUser : IdentityUser
     {

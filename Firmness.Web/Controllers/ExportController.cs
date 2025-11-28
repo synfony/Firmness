@@ -1,4 +1,4 @@
-using Firmness.Web.Data;
+using Firmness.Core.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

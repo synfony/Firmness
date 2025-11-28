@@ -1,8 +1,10 @@
+using Firmness.Core.Data;
+using Firmness.Core.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
-using Firmness.Web.Models;
 
 namespace Firmness.Web.Data
 {
@@ -10,98 +12,83 @@ namespace Firmness.Web.Data
     {
         public static async Task Initialize(IServiceProvider serviceProvider)
         {
-            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var context = serviceProvider.GetRequiredService<ApplicationDbContext>();
 
-            // Ensure database exists
             await context.Database.EnsureCreatedAsync();
 
-            // ---- Seed Roles ----
-            string[] roles = { "Administrator", "Client" };
-
-            foreach (var role in roles)
+            string[] roleNames = { "Administrator", "Client" };
+            foreach (var roleName in roleNames)
             {
-                if (!await roleManager.RoleExistsAsync(role))
-                    await roleManager.CreateAsync(new IdentityRole(role));
-            }
-
-            // ---- Seed Admin Person ----
-            var adminPerson = new Admin
-            {
-                FirstName = "System",
-                LastName = "Administrator",
-                DocumentId = "0000",
-                Address = "N/A",
-                PhoneNumber = "0000000000",
-                PersonType = "Admin",
-                SpecialRole = "SuperAdmin"
-            };
-
-            if (!context.Admins.Any())
-            {
-                context.Admins.Add(adminPerson);
-                await context.SaveChangesAsync();
-            }
-
-            // ---- Seed Admin User ----
-            string adminEmail = "admin@example.com";
-            var adminUser = await userManager.FindByEmailAsync(adminEmail);
-
-            if (adminUser == null)
-            {
-                adminUser = new ApplicationUser
+                if (!await roleManager.RoleExistsAsync(roleName))
                 {
-                    UserName = adminEmail,
-                    Email = adminEmail,
-                    EmailConfirmed = true,
-                    PersonId = adminPerson.Id
-                };
-
-                var result = await userManager.CreateAsync(adminUser, "Admin_1234");
-
-                if (result.Succeeded)
-                {
-                    await userManager.AddToRoleAsync(adminUser, "Administrator");
+                    await roleManager.CreateAsync(new IdentityRole(roleName));
                 }
             }
 
-            // ---- Seed Client Person ----
-            var clientPerson = new Client
+            var adminEmail = "admin@firmness.com";
+            if (await userManager.FindByEmailAsync(adminEmail) == null)
             {
-                FirstName = "Test",
-                LastName = "User",
-                DocumentId = "1111",
-                Address = "Client Street",
-                PhoneNumber = "1234567890",
-                PersonType = "Client"
-            };
-
-            if (!context.Clients.Any())
-            {
-                context.Clients.Add(clientPerson);
+                var adminPerson = new Admin
+                {
+                    FirstName = "Admin",
+                    LastName = "User",
+                    DocumentId = "00000000",
+                    Address = "Admin Address",
+                    PhoneNumber = "0000000000",
+                    PersonType = "Admin",
+                    SpecialRole = "SuperAdmin"
+                };
+                context.Admins.Add(adminPerson);
                 await context.SaveChangesAsync();
+
+                var newAdminUser = new ApplicationUser
+                {
+                    UserName = adminEmail,
+                    Email = adminEmail,
+                    PersonId = adminPerson.Id,
+                    EmailConfirmed = true
+                };
+                var result = await userManager.CreateAsync(newAdminUser, "Admin123*");
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(newAdminUser, "Administrator");
+                }
             }
 
-            // ---- Seed Client User ----
-            string clientEmail = "client@example.com";
-            var clientUser = await userManager.FindByEmailAsync(clientEmail);
-
-            if (clientUser == null)
+            var clientEmail = "cliente@firmness.com";
+            if (await userManager.FindByEmailAsync(clientEmail) == null)
             {
-                clientUser = new ApplicationUser
+                var clientPerson = new Client
+                {
+                    FirstName = "Client",
+                    LastName = "User",
+                    DocumentId = "11111111",
+                    Address = "Client Address",
+                    PhoneNumber = "1111111111",
+                    PersonType = "Client",
+                    PurchaseHistory = "Initial purchase"
+                };
+                context.Clients.Add(clientPerson);
+                await context.SaveChangesAsync();
+
+                var newClientUser = new ApplicationUser
                 {
                     UserName = clientEmail,
                     Email = clientEmail,
-                    EmailConfirmed = true,
-                    PersonId = clientPerson.Id
+                    PersonId = clientPerson.Id,
+                    EmailConfirmed = true
                 };
-
-                var result = await userManager.CreateAsync(clientUser, "Client_1234");
-
+                var result = await userManager.CreateAsync(newClientUser, "Client123*");
                 if (result.Succeeded)
                 {
-                    await userManager.AddToRoleAsync(clientUser, "Client");
+                    await userManager.AddToRoleAsync(newClientUser, "Client");
+                    
+                    // Link the Client entity to the ApplicationUser
+                    clientPerson.UserId = newClientUser.Id;
+                    context.Clients.Update(clientPerson);
+                    await context.SaveChangesAsync();
                 }
             }
         }

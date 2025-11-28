@@ -1,4 +1,4 @@
-namespace Firmness.Web.Models
+namespace Firmness.Core.Models
 {
     public class Product
     {
@@ -12,7 +12,6 @@ namespace Firmness.Web.Models
 
         public int Stock { get; set; }
 
-        public string? ImageUrl { get; set; } // ← NUEVO
+        public string? ImageUrl { get; set; }
     }
 }
-

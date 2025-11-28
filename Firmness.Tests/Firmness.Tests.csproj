@@ -25,7 +25,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Firmness.Core\Firmness.Core.csproj" />
     <ProjectReference Include="..\Firmness.Web\Firmness.Web.csproj" />
+    <ProjectReference Include="..\Firmness.ViewModels\Firmness.ViewModels.csproj" />
   </ItemGroup>
 
 </Project>

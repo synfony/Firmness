@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using Firmness.Web.Data;
+using Firmness.Core.Data;
 using Microsoft.AspNetCore.Authorization;
-using Firmness.Web.Services;
+using Firmness.Core.Services;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;

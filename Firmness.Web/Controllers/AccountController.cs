@@ -1,6 +1,6 @@
-using Firmness.Web.Data;
-using Firmness.Web.Models;
-using Firmness.Web.Models.ModelsView;
+using Firmness.Core.Data;
+using Firmness.Core.Models;
+using Firmness.ViewModels; // <-- Change this using statement
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;

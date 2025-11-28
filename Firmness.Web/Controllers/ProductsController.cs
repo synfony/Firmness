@@ -1,5 +1,5 @@
-using Firmness.Web.Data;
-using Firmness.Web.Models;
+using Firmness.Core.Data;
+using Firmness.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;

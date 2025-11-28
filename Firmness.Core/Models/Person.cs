@@ -1,4 +1,4 @@
-namespace Firmness.Web.Models
+namespace Firmness.Core.Models
 {
     public class Person
     {

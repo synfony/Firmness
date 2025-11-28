@@ -1,22 +1,28 @@
-@model IEnumerable<Firmness.Web.Models.Sale>
+@model IEnumerable<Firmness.Core.Models.Sale>
 
 @{
     ViewData["Title"] = "Ventas";
 }
 
-<h2>Ventas</h2>
+<div class="d-flex justify-content-between align-items-center mt-4">
+    <h1 class="m-0">Ventas</h1>
+    <div>
+        <a asp-action="Create" class="btn btn-primary">Crear Venta</a>
+        <form asp-action="RegeneratePdfs" method="post" class="d-inline">
+            <button type="submit" class="btn btn-secondary">Regenerar PDFs</button>
+        </form>
+    </div>
+</div>
+<p class="lead mt-2">Listado de todas las ventas registradas.</p>
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">Crear Nueva Venta</a>
-</p>
-
-<table class="table">
+<table class="table mt-4">
     <thead>
         <tr>
             <th>ID</th>
-            <th>Cliente</th>
             <th>Fecha</th>
-            <th>Recibo</th>
+            <th>Cliente</th>
+            <th>Total</th>
+            <th>Acciones</th>
         </tr>
     </thead>
     <tbody>
@@ -24,8 +30,9 @@
         {
             <tr>
                 <td>@item.Id</td>
-                <td>@(item.Client?.FirstName ?? "N/A") @(item.Client?.LastName ?? "")</td>
                 <td>@item.SaleDate.ToShortDateString()</td>
+                <td>@item.Client?.FirstName @item.Client?.LastName</td>
+                <td>@item.SaleDetails?.Sum(sd => sd.Quantity * sd.UnitPrice)</td>
                 <td>
                     @if (!string.IsNullOrEmpty(item.ReceiptUrl))
                     {

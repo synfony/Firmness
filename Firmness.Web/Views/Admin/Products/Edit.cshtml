@@ -1,4 +1,4 @@
-@model Firmness.Web.Models.Product
+@model Firmness.Core.Models.Product
 
 @{
     ViewData["Title"] = "Editar Producto";
@@ -7,51 +7,38 @@
 <h2 class="mb-4">Editar Producto</h2>
 
 <form asp-action="Edit" method="post" enctype="multipart/form-data">
-
     <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="ImageUrl" />
 
     <div class="mb-3">
-        <label asp-for="Name" class="form-label"></label>
+        <label class="form-label">Nombre</label>
         <input asp-for="Name" class="form-control" />
-        <span asp-validation-for="Name" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label asp-for="Description" class="form-label"></label>
+        <label class="form-label">Descripción</label>
         <textarea asp-for="Description" class="form-control"></textarea>
-        <span asp-validation-for="Description" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label asp-for="Price" class="form-label"></label>
+        <label class="form-label">Precio</label>
         <input asp-for="Price" class="form-control" />
-        <span asp-validation-for="Price" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label asp-for="Stock" class="form-label"></label>
+        <label class="form-label">Stock</label>
         <input asp-for="Stock" class="form-control" />
-        <span asp-validation-for="Stock" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Imagen actual</label><br />
+        <label class="form-label">Imagen</label>
+        <input type="file" name="ImageFile" class="form-control" />
         @if (!string.IsNullOrEmpty(Model.ImageUrl))
         {
-            <img src="@Model.ImageUrl" width="120" class="rounded border mb-2" />
+            <img src="@Model.ImageUrl" width="100" class="mt-2" />
         }
     </div>
 
-    <div class="mb-3">
-        <label class="form-label">Nueva imagen (opcional)</label>
-        <input type="file" name="ImageFile" class="form-control" />
-    </div>
-
-    <button type="submit" class="btn btn-warning">Actualizar</button>
+    <button type="submit" class="btn btn-primary">Guardar</button>
     <a asp-action="Index" class="btn btn-secondary">Volver</a>
-
 </form>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}

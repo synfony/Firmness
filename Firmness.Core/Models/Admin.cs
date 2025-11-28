@@ -1,4 +1,6 @@
-namespace Firmness.Web.Models
+using Firmness.Core.Models;
+
+namespace Firmness.Core.Models
 {
     public class Admin : Person
     {

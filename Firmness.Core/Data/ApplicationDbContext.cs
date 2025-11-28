@@ -1,10 +1,11 @@
+using Firmness.Core.Models;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Firmness.Web.Models;
 
-namespace Firmness.Web.Data
+namespace Firmness.Core.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IDataProtectionKeyContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -19,16 +20,26 @@ namespace Firmness.Web.Data
         public DbSet<Sale> Sales { get; set; }
 
         public DbSet<SaleDetail> SaleDetails { get; set; }
+        
+        // This property is required by IDataProtectionKeyContext
+        public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
-            // Inheritance configuration
             builder.Entity<ApplicationUser>()
                 .HasOne(u => u.Person)
                 .WithOne()
                 .HasForeignKey<ApplicationUser>(u => u.PersonId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure the one-to-one relationship between Client and ApplicationUser
+            builder.Entity<Client>()
+                .HasOne(c => c.User)
+                .WithOne()
+                .HasForeignKey<Client>(c => c.UserId)
+                .IsRequired(false); // UserId is nullable
         }
     }
 }

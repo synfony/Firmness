@@ -1,4 +1,4 @@
-@model Firmness.Web.Models.Product
+@model Firmness.Core.Models.Product
 
 @{
     ViewData["Title"] = "Crear Producto";
@@ -7,42 +7,31 @@
 <h2 class="mb-4">Crear Producto</h2>
 
 <form asp-action="Create" method="post" enctype="multipart/form-data">
-
     <div class="mb-3">
-        <label asp-for="Name" class="form-label"></label>
+        <label class="form-label">Nombre</label>
         <input asp-for="Name" class="form-control" />
-        <span asp-validation-for="Name" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label asp-for="Description" class="form-label"></label>
+        <label class="form-label">Descripción</label>
         <textarea asp-for="Description" class="form-control"></textarea>
-        <span asp-validation-for="Description" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label asp-for="Price" class="form-label"></label>
+        <label class="form-label">Precio</label>
         <input asp-for="Price" class="form-control" />
-        <span asp-validation-for="Price" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label asp-for="Stock" class="form-label"></label>
+        <label class="form-label">Stock</label>
         <input asp-for="Stock" class="form-control" />
-        <span asp-validation-for="Stock" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Imagen del producto</label>
+        <label class="form-label">Imagen</label>
         <input type="file" name="ImageFile" class="form-control" />
     </div>
 
-    <button type="submit" class="btn btn-success">Guardar</button>
+    <button type="submit" class="btn btn-primary">Crear</button>
     <a asp-action="Index" class="btn btn-secondary">Volver</a>
-
 </form>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
-

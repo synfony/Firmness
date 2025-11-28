@@ -1,6 +1,6 @@
-using Firmness.Web.Data;
-using Firmness.Web.Models;
-using Firmness.Web.Services;
+using Firmness.Core.Data;
+using Firmness.Core.Models;
+using Firmness.Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -97,6 +97,35 @@ namespace Firmness.Web.Controllers.Admin
             model.ReceiptUrl = $"/recibos/{fileName}";
 
             _context.Sales.Update(model);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // POST: Sales/RegeneratePdfs
+        [HttpPost]
+        public async Task<IActionResult> RegeneratePdfs()
+        {
+            var sales = await _context.Sales
+                .Include(s => s.Client)
+                .Include(s => s.SaleDetails)
+                .ThenInclude(sd => sd.Product)
+                .ToListAsync();
+
+            string wwwRootPath = _env.WebRootPath;
+            var recibosDir = Path.Combine(wwwRootPath, "recibos");
+
+            foreach (var sale in sales)
+            {
+                var pdfBytes = _pdfService.GenerateReceipt(sale);
+                string fileName = $"recibo-{sale.Id}-{DateTime.Now:yyyyMMddHHmmss}.pdf";
+                string path = Path.Combine(recibosDir, fileName);
+
+                await System.IO.File.WriteAllBytesAsync(path, pdfBytes);
+                sale.ReceiptUrl = $"/recibos/{fileName}";
+                _context.Sales.Update(sale);
+            }
+
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));

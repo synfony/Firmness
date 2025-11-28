@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Linq;
-using Firmness.Web.Data;
-using Firmness.Web.Models;
+using Firmness.Core.Data;
+using Firmness.Core.Models;
 using System;
 using Microsoft.EntityFrameworkCore;
 
-namespace Firmness.Web.Services
+namespace Firmness.Core.Services
 {
     public class ExcelImportService
     {
