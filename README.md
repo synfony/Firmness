@@ -6,89 +6,31 @@ El proyecto Firmness es una solución integral para la gestión de productos, cl
 
 ### Componentes Principales:
 - **Firmness.Web**: Aplicación web basada en Razor Pages para la administración del sistema.
-- **FIrmnessAPI**: API RESTful que expone endpoints para gestionar productos, clientes y ventas. Incluye autenticación JWT y un servicio de correo electrónico.
-- **Firmness.Core**: Librería de clases que contiene los modelos de dominio, la lógica de negocio central y los servicios compartidos (como `PdfService` y `IEmailService`).
-- **Firmness.ViewModels**: Librería de clases que contiene los Data Transfer Objects (DTOs) y ViewModels utilizados por la API y la aplicación web.
+- **FIrmnessAPI**: API RESTful que expone endpoints para gestionar productos, clientes y ventas.
+- **Firmness.Core**: Librería de clases que contiene los modelos de dominio, la lógica de negocio y los servicios compartidos.
+- **Firmness.ViewModels**: Librería de clases que contiene los Data Transfer Objects (DTOs) y ViewModels.
 - **Firmness.Tests**: Proyecto de pruebas unitarias para validar la funcionalidad del sistema.
 
-## Características Clave
+---
 
-- **Gestión de Usuarios y Roles**: Autenticación y autorización basada en ASP.NET Core Identity con roles de "Administrator" y "Client".
-- **API RESTful**: Endpoints para operaciones CRUD en productos, clientes y ventas.
-- **Autenticación JWT**: Seguridad para la API mediante JSON Web Tokens.
-- **Servicio de Correo Electrónico**: Envío de notificaciones (ej. bienvenida) a través de SMTP (configurado para Gmail).
-- **Generación de PDFs**: Creación de recibos de venta en formato PDF.
-- **Documentación de API**: Integración con Swagger/OpenAPI para documentación interactiva.
-- **Base de Datos**: PostgreSQL.
+## 🚀 Ejecución con Docker (Método Recomendado)
 
-## Diagramas Técnicos
-
-Los diagramas técnicos son fundamentales para comprender la arquitectura y el diseño del sistema. Se recomienda generar y colocar los siguientes diagramas en una carpeta `docs/diagrams` en la raíz del proyecto:
-
-- **Modelo Entidad-Relación (ERD)**: Muestra la estructura de la base de datos, incluyendo tablas, relaciones y atributos.
-- **Diagrama de Clases**: Representa la estructura estática de las clases del proyecto, sus atributos, métodos y las relaciones entre ellas.
-
-**Herramientas Sugeridas para Diagramas:**
-- **Lucidchart, draw.io (Diagrams.net)**: Para ERD y Diagramas de Clases.
-- **Visual Studio (Code Maps)**: Para generar diagramas de clases a partir del código.
-
-## Instalación y Ejecución
-
-### Requisitos Previos
-
-- .NET 8 SDK
-- Docker y Docker Compose
-- PostgreSQL (si no se usa Docker para la base de datos)
-
-### Configuración Local (sin Docker)
-
-1.  **Clonar el Repositorio**:
-    ```bash
-    git clone [URL_DEL_REPOSITORIO]
-    cd Firmness
-    ```
-2.  **Configurar la Base de Datos**:
-    Asegúrate de que tu instancia de PostgreSQL esté corriendo.
-    Actualiza la cadena de conexión en `appsettings.json` de `Firmness.Web` y `FIrmnessAPI` para que apunte a tu base de datos local.
-    ```json
-    "ConnectionStrings": {
-      "DefaultConnection": "Host=localhost;Port=5432;Database=firmness_db;Username=postgres;Password=your_password"
-    }
-    ```
-3.  **Aplicar Migraciones y Seed Data**:
-    Abre una terminal en la carpeta `Firmness.Web` y ejecuta:
-    ```bash
-    dotnet ef database update
-    ```
-    Esto creará la base de datos y aplicará las migraciones. El `SeedData` se ejecutará automáticamente al iniciar la aplicación web.
-4.  **Ejecutar la Aplicación Web**:
-    En la carpeta `Firmness.Web`:
-    ```bash
-    dotnet run
-    ```
-    La aplicación estará disponible en `http://localhost:8080` (o el puerto configurado).
-5.  **Ejecutar la API**:
-    En la carpeta `FIrmnessAPI`:
-    ```bash
-    dotnet run
-    ```
-    La API estará disponible en `http://localhost:5000` o `https://localhost:5001` (o los puertos configurados).
-
-### Ejecución con Docker Compose
-
-La forma recomendada de ejecutar el proyecto es usando Docker Compose, ya que gestiona la base de datos y ambos servicios (Web y API) automáticamente.
+Esta es la forma más sencilla y recomendada para levantar todo el entorno, ya que gestiona la base de datos y ambos servicios (Web y API) automáticamente.
 
 1.  **Construir y Levantar los Servicios**:
-    Desde la raíz del proyecto (`/home/Coder/Escritorio/Firmness/`):
+    Desde la raíz del proyecto, ejecuta:
     ```bash
     docker compose up --build
     ```
-    Esto construirá las imágenes de Docker para la API y la Web, y levantará todos los servicios definidos en `docker-compose.yml`, incluyendo la base de datos PostgreSQL.
+    Esto construirá las imágenes de Docker, creará la base de datos, aplicará las migraciones y levantará todos los servicios.
+
 2.  **Acceder a las Aplicaciones**:
     -   **Aplicación Web**: `http://localhost:8080`
-    -   **API (Swagger UI)**: `http://localhost:5000/swagger` (o `https://localhost:5001/swagger` si está configurado para HTTPS)
+    -   **API (Swagger UI)**: `http://localhost:8081/swagger`
 
-    **Credenciales de Prueba (creadas por SeedData):**
+    > **Nota**: La cadena de conexión en los archivos `appsettings.json` está preconfigurada para este entorno (`Host=db`).
+
+3.  **Credenciales de Prueba (creadas por `SeedData`)**:
     -   **Administrador**:
         -   Email: `admin@firmness.com`
         -   Password: `Admin123*`
@@ -96,34 +38,87 @@ La forma recomendada de ejecutar el proyecto es usando Docker Compose, ya que ge
         -   Email: `cliente@firmness.com`
         -   Password: `Client123*`
 
-## Consumo de la API y Pruebas de Endpoints
+---
 
-La API está documentada usando Swagger/OpenAPI, lo que permite explorar y probar los endpoints directamente desde el navegador.
+## 🔧 Ejecución Local (Sin Docker)
 
-1.  **Acceder a Swagger UI**:
-    Una vez que la API esté corriendo (ya sea localmente o con Docker), abre tu navegador y ve a `http://localhost:5000/swagger` (o el puerto HTTPS si aplica).
-2.  **Autenticación JWT en Swagger**:
-    -   Haz clic en el botón **"Authorize"** en la parte superior derecha de la interfaz de Swagger.
-    -   En el diálogo que aparece, utiliza el endpoint `/api/Auth/login` para obtener un token JWT.
-    -   Copia el token (solo la cadena del token, sin "Bearer ").
-    -   Pega el token en el campo de valor (con el prefijo "Bearer ", ej. `Bearer eyJ...`) y haz clic en "Authorize".
-    -   Ahora podrás probar los endpoints protegidos por autenticación.
-3.  **Probar Endpoints**:
-    -   Expande cualquier endpoint (ej. `GET /api/Products`).
-    -   Haz clic en "Try it out".
-    -   Haz clic en "Execute".
-    -   Verás la respuesta de la API, incluyendo el código de estado y el cuerpo de la respuesta.
+Si prefieres ejecutar los servicios localmente sin Docker, sigue estos pasos:
 
-## Pruebas Unitarias
+1.  **Requisitos Previos**:
+    -   .NET 8 SDK
+    -   PostgreSQL instalado y corriendo localmente.
 
-El proyecto `Firmness.Tests` contiene pruebas unitarias para componentes clave del sistema.
+2.  **Configurar la Base de Datos**:
+    Modifica la cadena de conexión en **todos** los siguientes archivos para que apunte a tu base de datos local:
+    -   `Firmness.Web/appsettings.Development.json`
+    -   `FIrmnessAPI/appsettings.Development.json`
 
-1.  **Ejecutar Pruebas**:
-    Desde la raíz del proyecto, o desde la carpeta `Firmness.Tests`:
-    ```bash
-    dotnet test
+    Ejemplo de cadena de conexión local:
+    ```json
+    "ConnectionStrings": {
+      "DefaultConnection": "Host=localhost;Port=5432;Database=firmness_db;Username=postgres;Password=your_password"
+    }
     ```
-    Esto ejecutará todas las pruebas unitarias y mostrará los resultados en la consola.
+
+3.  **Aplicar Migraciones**:
+    Desde la raíz del proyecto, ejecuta:
+    ```bash
+    dotnet ef database update -s Firmness.Web
+    ```
+
+4.  **Ejecutar los Proyectos**:
+    Abre dos terminales separadas.
+    -   En la primera terminal, ejecuta la API:
+        ```bash
+        cd FIrmnessAPI
+        dotnet run
+        ```
+    -   En la segunda terminal, ejecuta la Web:
+        ```bash
+        cd Firmness.Web
+        dotnet run
+        ```
 
 ---
-**Nota:** Recuerda actualizar las credenciales de correo electrónico en `FIrmnessAPI/appsettings.json` para que el servicio de envío de correos funcione correctamente.
+
+## 🗃️ Gestión de Migraciones (Entity Framework)
+
+Debido a la estructura multi-proyecto, es importante usar los comandos de `dotnet ef` con los parámetros correctos.
+
+-   **Para Añadir una Nueva Migración**:
+    Desde la raíz del proyecto, ejecuta:
+    ```bash
+    dotnet ef migrations add <NombreDeLaMigracion> -p Firmness.Core -s Firmness.Web
+    ```
+    -   `-p Firmness.Core`: Especifica que el proyecto de destino (donde se guardan las migraciones) es `Firmness.Core`.
+    -   `-s Firmness.Web`: Especifica que el proyecto de inicio (que tiene la configuración) es `Firmness.Web`.
+
+-   **Para Aplicar Migraciones a la Base de Datos**:
+    ```bash
+    dotnet ef database update -s Firmness.Web
+    ```
+
+---
+
+## 🤔 Solución de Problemas (Troubleshooting)
+
+-   **Error: `Host can't be null` o `Connection string 'Default' not found` al ejecutar `dotnet ef`**
+    -   **Causa**: Este error ocurre porque la herramienta EF CLI no puede encontrar una cadena de conexión válida.
+    -   **Solución**: Asegúrate de que la sección `ConnectionStrings` con el nombre `DefaultConnection` exista y sea correcta en **TODOS** los siguientes archivos:
+        -   `Firmness.Web/appsettings.json`
+        -   `Firmness.Web/appsettings.Development.json`
+        -   `FIrmnessAPI/appsettings.json`
+        -   `FIrmnessAPI/appsettings.Development.json`
+
+---
+
+## 🧪 Pruebas Unitarias
+
+El proyecto `Firmness.Tests` contiene pruebas unitarias. Para ejecutarlas:
+
+```bash
+dotnet test
+```
+
+---
+> **Nota Final:** Recuerda actualizar las credenciales de correo electrónico en `FIrmnessAPI/appsettings.json` para que el servicio de envío de correos funcione correctamente.

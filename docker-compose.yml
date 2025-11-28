@@ -13,22 +13,6 @@ services:
       - firmness_postgres_data:/var/lib/postgresql
     restart: unless-stopped
 
-  # ASP.NET Core Web Application
-  web:
-    build:
-      context: .
-      dockerfile: Dockerfile.unified
-      target: final-web
-    container_name: firmness_web
-    ports:
-      - "8080:8080"
-    environment:
-      ASPNETCORE_URLS: "http://+:8080"
-      ConnectionStrings__Default: "Host=db;Port=5432;Database=firmness;Username=postgres;Password=Qwe.123*"
-    depends_on:
-      - db
-    restart: on-failure
-
   # ASP.NET Core Web API
   api:
     build:
@@ -40,9 +24,40 @@ services:
       - "8081:8081"
     environment:
       ASPNETCORE_URLS: "http://+:8081"
-      ConnectionStrings__Default: "Host=db;Port=5432;Database=firmness;Username=postgres;Password=Qwe.123*"
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=firmness;Username=postgres;Password=Qwe.123*"
     depends_on:
       - db
+    restart: on-failure
+
+  # ASP.NET Core Web Application (Admin)
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.unified
+      target: final-web
+    container_name: firmness_web
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_URLS: "http://+:8080"
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=firmness;Username=postgres;Password=Qwe.123*"
+    depends_on:
+      - db
+    restart: on-failure
+
+  # Next.js Client Frontend
+  client:
+    image: firmness-client # Usar una imagen pre-construida
+    # build:
+    #   context: firmness-client
+    #   dockerfile: Dockerfile
+    container_name: firmness_client
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: "http://api:8081"
+    depends_on:
+      - api
     restart: on-failure
 
 volumes:
