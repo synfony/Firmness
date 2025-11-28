@@ -47,10 +47,7 @@ services:
 
   # Next.js Client Frontend
   client:
-    image: firmness-client # Usar una imagen pre-construida
-    # build:
-    #   context: firmness-client
-    #   dockerfile: Dockerfile
+    image: firmness-client:latest # Usar la imagen que ya construimos
     container_name: firmness_client
     ports:
       - "3000:3000"
