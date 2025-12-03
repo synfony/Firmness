@@ -14,9 +14,10 @@ namespace Firmness.API
             CreateMap<ProductDto, Product>();
 
             // Client Mappings
-            // Ensure User is loaded when mapping Client to ClientDto to access Email
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             CreateMap<Client, ClientDto>()
-                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User != null ? src.User.Email : null)); 
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User != null && src.User.Email != null ? src.User.Email! : string.Empty));
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
             CreateMap<ClientDto, Client>();
 
             // Sale Mappings
@@ -25,7 +26,7 @@ namespace Firmness.API
                 .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.SaleDetails != null ? src.SaleDetails.Sum(sd => sd.Quantity * sd.UnitPrice) : 0m));
             
             CreateMap<SaleDetail, SaleDetailDto>()
-                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product != null ? src.Product.Name : "N/A"));
+                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product != null ? src.Product.Name! : "N/A"));
 
             // Reverse mappings for creation/update if needed
             CreateMap<SaleDto, Sale>();

@@ -3,15 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Firmness.Core", "Firmness.Core\Firmness.Core.csproj", "{YOUR_CORE_PROJECT_GUID}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Firmness.Core", "Firmness.Core\Firmness.Core.csproj", "{00000000-0000-0000-0000-000000000000}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Firmness.ViewModels", "Firmness.ViewModels\Firmness.ViewModels.csproj", "{YOUR_VIEWMODELS_PROJECT_GUID}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Firmness.ViewModels", "Firmness.ViewModels\Firmness.ViewModels.csproj", "{00000000-0000-0000-0000-000000000000}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Firmness.Web", "Firmness.Web\Firmness.Web.csproj", "{YOUR_PROJECT_GUID}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Firmness.Web", "Firmness.Web\Firmness.Web.csproj", "{00000000-0000-0000-0000-000000000000}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Firmness.Tests", "Firmness.Tests\Firmness.Tests.csproj", "{YOUR_TEST_PROJECT_GUID}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Firmness.Tests", "Firmness.Tests\Firmness.Tests.csproj", "{00000000-0000-0000-0000-000000000000}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FIrmnessAPI", "FIrmnessAPI\FIrmnessAPI.csproj", "{YOUR_API_PROJECT_GUID}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FIrmnessAPI", "FIrmnessAPI\FIrmnessAPI.csproj", "{00000000-0000-0000-0000-000000000000}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Firmness.Web", "Firmness.Web\Firmness.Web.csproj", "{C8EB9486-DC53-4E16-8C2D-A088E1B74364}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,5 +41,9 @@ Global
 		{YOUR_API_PROJECT_GUID}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{YOUR_API_PROJECT_GUID}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{YOUR_API_PROJECT_GUID}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8EB9486-DC53-4E16-8C2D-A088E1B74364}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8EB9486-DC53-4E16-8C2D-A088E1B74364}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8EB9486-DC53-4E16-8C2D-A088E1B74364}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8EB9486-DC53-4E16-8C2D-A088E1B74364}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

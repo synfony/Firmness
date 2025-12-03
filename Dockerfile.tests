@@ -1,0 +1,21 @@
+# Use the .NET SDK image
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS test
+
+WORKDIR /src
+
+# Copy all project and solution files
+COPY ["Firmness.sln", "."]
+COPY ["FIrmnessAPI/FIrmnessAPI.csproj", "FIrmnessAPI/"]
+COPY ["Firmness.Core/Firmness.Core.csproj", "Firmness.Core/"]
+COPY ["Firmness.Tests/Firmness.Tests.csproj", "Firmness.Tests/"]
+COPY ["Firmness.ViewModels/Firmness.ViewModels.csproj", "Firmness.ViewModels/"]
+COPY ["Firmness.Web/Firmness.Web.csproj", "Firmness.Web/"]
+
+# Restore dependencies for the entire solution
+RUN dotnet restore "Firmness.sln"
+
+# Copy the rest of the source code
+COPY . .
+
+# Run the tests
+CMD ["dotnet", "test", "Firmness.Tests/Firmness.Tests.csproj", "--no-restore"]

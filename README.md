@@ -1,124 +1,110 @@
-# Proyecto Firmness
+# Firmness - Construction and Rental Management System
 
-## Descripción General del Sistema
+## Overview
 
-El proyecto Firmness es una solución integral para la gestión de productos, clientes y ventas, diseñada para ser modular y escalable. Consta de una aplicación web (Razor Pages) para administración y una API RESTful (ASP.NET Core) para ser consumida por otros clientes, como aplicaciones Blazor o móviles.
+Firmness is a comprehensive web application designed to manage the sale of construction materials and vehicle rentals. The system consists of a RESTful API built with ASP.NET Core and a modern frontend developed with Vue.js.
 
-### Componentes Principales:
-- **Firmness.Web**: Aplicación web basada en Razor Pages para la administración del sistema.
-- **FIrmnessAPI**: API RESTful que expone endpoints para gestionar productos, clientes y ventas.
-- **Firmness.Core**: Librería de clases que contiene los modelos de dominio, la lógica de negocio y los servicios compartidos.
-- **Firmness.ViewModels**: Librería de clases que contiene los Data Transfer Objects (DTOs) y ViewModels.
-- **Firmness.Tests**: Proyecto de pruebas unitarias para validar la funcionalidad del sistema.
+## Main Features
 
----
+- **Product Management:** Full CRUD for products.
+- **Customer Management and Authentication:** User registration, login, and role-based authentication (Admin, Client) using JWT.
+- **Purchase Process:** Shopping cart and checkout flow to create sales.
+- **Email Notifications:** Automatic email sending for registration and purchase confirmations.
+- **API Documentation:** Endpoints documented and ready to test via Swagger.
 
-## 🚀 Ejecución con Docker (Método Recomendado)
+## Architecture and Technologies
 
-Esta es la forma más sencilla y recomendada para levantar todo el entorno, ya que gestiona la base de datos y ambos servicios (Web y API) automáticamente.
+- **Backend (API):**
+  - **Framework:** ASP.NET Core 8
+  - **Database:** PostgreSQL
+  - **Authentication:** ASP.NET Core Identity with JSON Web Tokens (JWT)
+  - **Object Mapping:** AutoMapper
+  - **Unit Testing:** xUnit and Moq
 
-1.  **Construir y Levantar los Servicios**:
-    Desde la raíz del proyecto, ejecuta:
-    ```bash
-    docker compose up --build
-    ```
-    Esto construirá las imágenes de Docker, creará la base de datos, aplicará las migraciones y levantará todos los servicios.
+- **Frontend (Client):**
+  - **Framework:** Vue.js 3 (with Vite)
+  - **State Management:** Pinia
+  - **Routing:** Vue Router
+  - **HTTP Requests:** Axios
 
-2.  **Acceder a las Aplicaciones**:
-    -   **Aplicación Web**: `http://localhost:8080`
-    -   **API (Swagger UI)**: `http://localhost:8081/swagger`
+- **Containerization:**
+  - Docker and Docker Compose
 
-    > **Nota**: La cadena de conexión en los archivos `appsettings.json` está preconfigurada para este entorno (`Host=db`).
+## Prerequisites
 
-3.  **Credenciales de Prueba (creadas por `SeedData`)**:
-    -   **Administrador**:
-        -   Email: `admin@firmness.com`
-        -   Password: `Admin123*`
-    -   **Cliente**:
-        -   Email: `cliente@firmness.com`
-        -   Password: `Client123*`
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [Node.js and npm](https://nodejs.org/) (v18 or higher)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Optional, for containerized execution)
 
----
+## Installation and Execution
 
-## 🔧 Ejecución Local (Sin Docker)
+### 1. Local Execution
 
-Si prefieres ejecutar los servicios localmente sin Docker, sigue estos pasos:
+**a) Start the Database (if using Docker for the DB):**
 
-1.  **Requisitos Previos**:
-    -   .NET 8 SDK
-    -   PostgreSQL instalado y corriendo localmente.
-
-2.  **Configurar la Base de Datos**:
-    Modifica la cadena de conexión en **todos** los siguientes archivos para que apunte a tu base de datos local:
-    -   `Firmness.Web/appsettings.Development.json`
-    -   `FIrmnessAPI/appsettings.Development.json`
-
-    Ejemplo de cadena de conexión local:
-    ```json
-    "ConnectionStrings": {
-      "DefaultConnection": "Host=localhost;Port=5432;Database=firmness_db;Username=postgres;Password=your_password"
-    }
-    ```
-
-3.  **Aplicar Migraciones**:
-    Desde la raíz del proyecto, ejecuta:
-    ```bash
-    dotnet ef database update -s Firmness.Web
-    ```
-
-4.  **Ejecutar los Proyectos**:
-    Abre dos terminales separadas.
-    -   En la primera terminal, ejecuta la API:
-        ```bash
-        cd FIrmnessAPI
-        dotnet run
-        ```
-    -   En la segunda terminal, ejecuta la Web:
-        ```bash
-        cd Firmness.Web
-        dotnet run
-        ```
-
----
-
-## 🗃️ Gestión de Migraciones (Entity Framework)
-
-Debido a la estructura multi-proyecto, es importante usar los comandos de `dotnet ef` con los parámetros correctos.
-
--   **Para Añadir una Nueva Migración**:
-    Desde la raíz del proyecto, ejecuta:
-    ```bash
-    dotnet ef migrations add <NombreDeLaMigracion> -p Firmness.Core -s Firmness.Web
-    ```
-    -   `-p Firmness.Core`: Especifica que el proyecto de destino (donde se guardan las migraciones) es `Firmness.Core`.
-    -   `-s Firmness.Web`: Especifica que el proyecto de inicio (que tiene la configuración) es `Firmness.Web`.
-
--   **Para Aplicar Migraciones a la Base de Datos**:
-    ```bash
-    dotnet ef database update -s Firmness.Web
-    ```
-
----
-
-## 🤔 Solución de Problemas (Troubleshooting)
-
--   **Error: `Host can't be null` o `Connection string 'Default' not found` al ejecutar `dotnet ef`**
-    -   **Causa**: Este error ocurre porque la herramienta EF CLI no puede encontrar una cadena de conexión válida.
-    -   **Solución**: Asegúrate de que la sección `ConnectionStrings` con el nombre `DefaultConnection` exista y sea correcta en **TODOS** los siguientes archivos:
-        -   `Firmness.Web/appsettings.json`
-        -   `Firmness.Web/appsettings.Development.json`
-        -   `FIrmnessAPI/appsettings.json`
-        -   `FIrmnessAPI/appsettings.Development.json`
-
----
-
-## 🧪 Pruebas Unitarias
-
-El proyecto `Firmness.Tests` contiene pruebas unitarias. Para ejecutarlas:
-
-```bash
-dotnet test
+```sh
+# From the project root
+docker-compose up -d db
 ```
 
----
-> **Nota Final:** Recuerda actualizar las credenciales de correo electrónico en `FIrmnessAPI/appsettings.json` para que el servicio de envío de correos funcione correctamente.
+**b) Start the Backend API:**
+
+```sh
+# Navigate to the API folder
+cd FIrmnessAPI
+
+# Restore dependencies and run the API
+dotnet run
+```
+The API will be available at `http://localhost:5000` and `https://localhost:5001`.
+Swagger UI will be at `http://localhost:5000/swagger`.
+
+**c) Start the Frontend:**
+
+```sh
+# Navigate to the client folder
+cd firmness-client
+
+# Install dependencies
+npm install
+
+# Run the development server
+npm run dev
+```
+The client application will be available at `http://localhost:5173`.
+
+### 2. Execution with Docker Compose (Full)
+
+This method starts the database, the API, and the client, all in containers.
+
+```sh
+# From the project root
+docker-compose up --build
+```
+
+- **Frontend:** `http://localhost:5173`
+- **API (Swagger):** `http://localhost:5000/swagger`
+
+## Project Structure
+
+```
+/
+├── FIrmnessAPI/         # API Project (ASP.NET Core)
+├── firmness-client/     # Client Project (Vue.js)
+├── Firmness.Core/      # Shared business logic, models, and services
+├── Firmness.Tests/        # Unit tests
+├── Firmness.ViewModels/   # Shared DTOs and ViewModels
+├── Firmness.Web/          # Original project (Razor Pages)
+├── docker-compose.yml   # Container orchestration
+└── README.md            # This file
+```
+
+## Main API Endpoints
+
+All endpoints (except `login` and `register`) require JWT authentication.
+
+- `POST /api/Auth/register`: Registers a new user.
+- `POST /api/Auth/login`: Authenticates and provides a JWT.
+- `GET /api/Products`: Gets the list of all products.
+- `POST /api/Sales`: Creates a new sale from the items in the cart.
+```

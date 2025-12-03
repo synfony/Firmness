@@ -1,31 +1,18 @@
-# Etapa 1: Build
-FROM node:20-alpine AS build
+# Build stage
+FROM node:18 AS build
 WORKDIR /app
-
-# Copiar primero los archivos de dependencias e instalar
-COPY package.json package-lock.json ./
-# Usar npm ci con --legacy-peer-deps para ignorar conflictos
-RUN npm ci --legacy-peer-deps
-
-# Copiar el resto de los archivos de la aplicación
+COPY package*.json ./
+RUN npm install
 COPY . .
+# Set the API URL for the production build
+ARG VITE_API_BASE_URL=http://localhost:8081/api
+ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
+RUN npm run build
 
-# Construir la aplicación usando el script sin Turbopack
-RUN npm run build:docker
-
-# Etapa 2: Producción
-FROM node:20-alpine AS production
-WORKDIR /app
-
-ENV NODE_ENV=production
-
-# Copiar los archivos de la compilación desde la etapa de build
-COPY --from=build /app/public ./public
-COPY --from=build /app/.next/standalone ./
-COPY --from=build /app/.next/static ./.next/static
-
-EXPOSE 3000
-ENV PORT 3000
-
-# Iniciar el servidor de Next.js
-CMD ["node", "server.js"]
+# Production stage
+FROM nginx:stable-alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+# Copy a custom Nginx config to handle SPA routing
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

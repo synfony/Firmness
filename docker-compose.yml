@@ -1,7 +1,16 @@
+version: '3.8'
+
 services:
-  # PostgreSQL Database Service
+  # 1. Test Runner Service
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.tests
+    container_name: firmness_tests
+
+  # 2. Database Service
   db:
-    image: postgres:18
+    image: postgres:16 # Using a more common version
     container_name: firmness_db
     environment:
       POSTGRES_USER: postgres
@@ -10,32 +19,34 @@ services:
     ports:
       - "5544:5432"
     volumes:
-      - firmness_postgres_data:/var/lib/postgresql
+      - firmness_postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
+    # This service will not start until the 'tests' service completes successfully.
+    depends_on:
+      tests:
+        condition: service_completed_successfully
 
-  # ASP.NET Core Web API
+  # 3. API Service
   api:
     build:
       context: .
-      dockerfile: Dockerfile.unified
-      target: final-api
+      dockerfile: FIrmnessAPI/Dockerfile
     container_name: firmness_api
     ports:
-      - "8081:8081"
+      - "8081:8080" # Exposing on 8081, container runs on 80
     environment:
-      ASPNETCORE_URLS: "http://+:8081"
+      ASPNETCORE_URLS: "http://+:8080"
       ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=firmness;Username=postgres;Password=Qwe.123*"
     depends_on:
       - db
     restart: on-failure
 
-  # ASP.NET Core Web Application (Admin)
-  web:
+  # 4. Admin (Web) Service
+  admin:
     build:
       context: .
-      dockerfile: Dockerfile.unified
-      target: final-web
-    container_name: firmness_web
+      dockerfile: Firmness.Web/Dockerfile
+    container_name: firmness_admin
     ports:
       - "8080:8080"
     environment:
@@ -45,14 +56,17 @@ services:
       - db
     restart: on-failure
 
-  # Next.js Client Frontend
+  # 5. Client (Vue) Service
   client:
-    image: firmness-client:latest # Usar la imagen que ya construimos
+    build:
+      context: ./firmness-client
+      dockerfile: Dockerfile
+      args:
+        # Pass the API URL to the Vue build
+        VITE_API_BASE_URL: http://localhost:8081/api
     container_name: firmness_client
     ports:
-      - "3000:3000"
-    environment:
-      NEXT_PUBLIC_API_URL: "http://api:8081"
+      - "5173:80" # Exposing on 5173, Nginx runs on 80
     depends_on:
       - api
     restart: on-failure

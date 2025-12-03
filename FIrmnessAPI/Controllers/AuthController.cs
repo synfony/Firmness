@@ -42,7 +42,7 @@ namespace Firmness.API.Controllers
 
                 var authClaims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Name, user.UserName!), // user.UserName is guaranteed not null here by Identity
+                    new Claim(ClaimTypes.NameIdentifier, user.Id), // Use NameIdentifier for user ID
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 };
 
@@ -99,9 +99,9 @@ namespace Firmness.API.Controllers
             await _userManager.AddToRoleAsync(user, "Client");
 
             // Send welcome email
-            var subject = "Bienvenido a Firmness!";
-            var message = $"<h1>Hola {user.UserName},</h1><p>Gracias por registrarte en Firmness. Esperamos que disfrutes de nuestros servicios.</p>";
-            await _emailService.SendEmailAsync(user.Email!, subject, message); // user.Email is guaranteed not null here
+            var subject = "Welcome to Firmness!";
+            var message = $"<h1>Hello {user.UserName},</h1><p>Thank you for registering at Firmness. We hope you enjoy our services.</p>";
+            await _emailService.SendEmailAsync(user.Email!, subject, message);
 
             return Ok(new { Status = "Success", Message = "User created successfully and welcome email sent!" });
         }

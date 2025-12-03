@@ -1,9 +1,0 @@
-# Ignorar dependencias y resultados de compilación
-node_modules
-.next
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-coverage
-*.tsbuildinfo

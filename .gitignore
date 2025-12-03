@@ -5,6 +5,8 @@
 
 # dotenv files
 .env
+.env.*
+!.env.example
 
 # User-specific files
 *.rsuser
@@ -482,3 +484,31 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Node.js / Frontend
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Build output
+dist
+dist-ssr
+*.local
+
+# Dependency directories
+/node_modules
+
+# IDE files
+.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# TypeScript
+*.tsbuildinfo
