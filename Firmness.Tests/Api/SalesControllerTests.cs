@@ -56,9 +56,10 @@ namespace Firmness.Tests.Api
 
             var saleDto = new SaleDto
             {
+                ClientName = "Test User",
                 SaleDetails = new List<SaleDetailDto>
                 {
-                    new SaleDetailDto { ProductId = 1, Quantity = 2, UnitPrice = 100 }
+                    new SaleDetailDto { ProductId = 1, Quantity = 2, UnitPrice = 100, ProductName = "Test Product" }
                 }
             };
 

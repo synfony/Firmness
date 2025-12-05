@@ -3,11 +3,17 @@ using Firmness.Core.Services;
 using Firmness.Core.Models;
 using System.Collections.Generic;
 using System.Linq;
+using QuestPDF.Infrastructure;
 
 namespace Firmness.Tests.Services
 {
     public class PdfServiceTests
     {
+        public PdfServiceTests()
+        {
+            QuestPDF.Settings.License = LicenseType.Community;
+        }
+
         [Fact]
         public void GenerateReceipt_ShouldReturnPdfBytes_ForValidSale()
         {

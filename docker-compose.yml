@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # 1. Test Runner Service
   tests:
@@ -19,7 +17,7 @@ services:
     ports:
       - "5544:5432"
     volumes:
-      - firmness_postgres_data:/var/lib/postgresql/data
+      - ./db-data:/var/lib/postgresql/data # Using a bind mount instead of a named volume
     restart: unless-stopped
     # This service will not start until the 'tests' service completes successfully.
     depends_on:
@@ -71,6 +69,23 @@ services:
       - api
     restart: on-failure
 
-volumes:
-  firmness_postgres_data:
-    driver: local
+  # 6. Summary Service
+  summary:
+    image: alpine:latest
+    container_name: firmness_summary
+    command: |
+      sh -c "echo '==================================================' && \
+             echo '✅ Your services are up and running!' && \
+             echo '' && \
+             echo '🔗 Access your applications here:' && \
+             echo '-----------------------------------' && \
+             echo '🔹 Admin Panel: http://localhost:8080' && \
+             echo '🔹 User Client: http://localhost:5173' && \
+             echo '🔹 API Base:    http://localhost:8081/api' && \
+             echo '=================================================='"
+    depends_on:
+      - admin
+      - client
+
+# The named volume is no longer needed
+volumes: {}

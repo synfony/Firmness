@@ -13,6 +13,9 @@ using Microsoft.Extensions.Configuration;
 using System;
 using Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore;
 using System.IO;
+using Npgsql;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 // Set EPPlus and QuestPDF licenses
 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -41,13 +44,40 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// --- Apply migrations and seed data on startup ---
-using (var scope = app.Services.CreateScope())
+// --- Retry logic for database connection ---
+int maxRetries = 10; // Increased retries for more resilience
+int delayInSeconds = 5;
+for (int i = 0; i < maxRetries; i++)
 {
-    var services = scope.ServiceProvider;
-    var dbContext = services.GetRequiredService<ApplicationDbContext>();
-    dbContext.Database.Migrate();
-    await SeedData.Initialize(services);
+    try
+    {
+        using (var scope = app.Services.CreateScope())
+        {
+            var services = scope.ServiceProvider;
+            var dbContext = services.GetRequiredService<ApplicationDbContext>();
+            var logger = services.GetRequiredService<ILogger<Program>>();
+
+            logger.LogInformation("Attempting to connect to the database and apply migrations... (Attempt {AttemptNumber})", i + 1);
+            dbContext.Database.Migrate();
+            await SeedData.Initialize(services);
+            logger.LogInformation("Database connection successful and migrations applied.");
+            break; // Exit loop if successful
+        }
+    }
+    catch (Exception ex) // Catching a more generic exception to handle SocketException and others
+    {
+        var logger = app.Services.GetRequiredService<ILogger<Program>>();
+        logger.LogWarning(ex, "Database connection failed. Retrying in {Delay} seconds...", delayInSeconds);
+        if (i < maxRetries - 1)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(delayInSeconds));
+        }
+        else
+        {
+            logger.LogError("Could not connect to the database after {MaxRetries} attempts. The application will now exit.", maxRetries);
+            throw; // Re-throw the exception if all retries fail
+        }
+    }
 }
 // ---------------------------------
 

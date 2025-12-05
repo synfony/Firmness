@@ -84,11 +84,6 @@ namespace Firmness.Web.Data
                 if (result.Succeeded)
                 {
                     await userManager.AddToRoleAsync(newClientUser, "Client");
-                    
-                    // Link the Client entity to the ApplicationUser
-                    clientPerson.UserId = newClientUser.Id;
-                    context.Clients.Update(clientPerson);
-                    await context.SaveChangesAsync();
                 }
             }
         }

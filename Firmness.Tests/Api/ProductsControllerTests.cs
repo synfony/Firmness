@@ -6,6 +6,7 @@ using Firmness.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,21 +16,23 @@ namespace Firmness.Tests.Api
 {
     public class ProductsControllerTests
     {
-        private readonly DbContextOptions<ApplicationDbContext> _dbOptions;
         private readonly Mock<IMapper> _mapperMock;
 
         public ProductsControllerTests()
         {
-            _dbOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(databaseName: "FirmnessTestDb_Products")
-                .Options;
-
             _mapperMock = new Mock<IMapper>();
         }
 
-        private async Task SeedDatabase()
+        private DbContextOptions<ApplicationDbContext> GetDbOptions()
         {
-            await using var context = new ApplicationDbContext(_dbOptions);
+            return new DbContextOptionsBuilder<ApplicationDbContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
+        }
+
+        private async Task SeedDatabase(DbContextOptions<ApplicationDbContext> options)
+        {
+            await using var context = new ApplicationDbContext(options);
             context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
             
@@ -44,13 +47,14 @@ namespace Firmness.Tests.Api
         public async Task GetProducts_ReturnsOkResult_WithListOfProducts()
         {
             // Arrange
-            await SeedDatabase();
+            var dbOptions = GetDbOptions();
+            await SeedDatabase(dbOptions);
             
             _mapperMock.Setup(m => m.Map<IEnumerable<ProductDto>>(It.IsAny<IEnumerable<Product>>()))
-                .Returns((IEnumerable<Product> src) => src.Select(p => new ProductDto { Id = p.Id, Name = p.Name, Price = p.Price, Description = p.Description, Stock = p.Stock, ImageUrl = p.ImageUrl }).ToList());
+                .Returns((IEnumerable<Product> src) => src.Select(p => new ProductDto { Id = p.Id, Name = p.Name, Price = p.Price, Description = p.Description, Stock = p.Stock }).ToList());
 
             // Act
-            await using var context = new ApplicationDbContext(_dbOptions);
+            await using var context = new ApplicationDbContext(dbOptions);
             var controller = new ProductsController(context, _mapperMock.Object);
             var result = await controller.GetProducts();
 
@@ -64,7 +68,8 @@ namespace Firmness.Tests.Api
         public async Task GetProducts_ReturnsOkResult_WithEmptyList_WhenNoProductsExist()
         {
             // Arrange
-            await using (var context = new ApplicationDbContext(_dbOptions))
+            var dbOptions = GetDbOptions();
+            await using (var context = new ApplicationDbContext(dbOptions))
             {
                 context.Database.EnsureDeleted();
                 context.Database.EnsureCreated();
@@ -74,8 +79,8 @@ namespace Firmness.Tests.Api
                 .Returns(new List<ProductDto>());
 
             // Act
-            await using var context = new ApplicationDbContext(_dbOptions);
-            var controller = new ProductsController(context, _mapperMock.Object);
+            await using var actContext = new ApplicationDbContext(dbOptions);
+            var controller = new ProductsController(actContext, _mapperMock.Object);
             var result = await controller.GetProducts();
 
             // Assert

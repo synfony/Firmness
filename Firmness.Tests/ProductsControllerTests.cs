@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using Moq;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Firmness.Tests
 {
@@ -30,7 +32,8 @@ namespace Firmness.Tests
             dbContext.Products.Add(new Product { Name = "Test Product 2", Price = 20, Stock = 200 });
             await dbContext.SaveChangesAsync();
 
-            var controller = new ProductsController(dbContext, null); // IWebHostEnvironment is not needed for this test
+            var mockWebHostEnvironment = new Mock<IWebHostEnvironment>();
+            var controller = new ProductsController(dbContext, mockWebHostEnvironment.Object);
 
             // Act
             var result = await controller.Index();

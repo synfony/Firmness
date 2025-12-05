@@ -1,8 +1,12 @@
 # Build stage
-FROM node:18 AS build
+FROM node:20 AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
+# Install Pinia, which is a required dependency
+RUN npm install pinia
+# Install Axios, which is a required dependency
+RUN npm install axios
 COPY . .
 # Set the API URL for the production build
 ARG VITE_API_BASE_URL=http://localhost:8081/api

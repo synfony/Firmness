@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using Npgsql;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -89,6 +92,45 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
+
+// --- Retry logic for database connection ---
+int maxRetries = 10;
+int delayInSeconds = 5;
+for (int i = 0; i < maxRetries; i++)
+{
+    try
+    {
+        using (var scope = app.Services.CreateScope())
+        {
+            var services = scope.ServiceProvider;
+            var dbContext = services.GetRequiredService<ApplicationDbContext>();
+            var logger = services.GetRequiredService<ILogger<Program>>();
+
+            logger.LogInformation("API attempting to connect to the database... (Attempt {AttemptNumber})", i + 1);
+            // A simple check to see if the database is available
+            if (await dbContext.Database.CanConnectAsync())
+            {
+                logger.LogInformation("API database connection successful.");
+                break; // Exit loop if successful
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        var logger = app.Services.GetRequiredService<ILogger<Program>>();
+        logger.LogWarning(ex, "API database connection failed. Retrying in {Delay} seconds...", delayInSeconds);
+        if (i < maxRetries - 1)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(delayInSeconds));
+        }
+        else
+        {
+            logger.LogError("API could not connect to the database after {MaxRetries} attempts. The application will now exit.", maxRetries);
+            throw; // Re-throw the exception if all retries fail
+        }
+    }
+}
+// ---------------------------------
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

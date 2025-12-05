@@ -18,4 +18,4 @@ RUN dotnet restore "Firmness.sln"
 COPY . .
 
 # Run the tests
-CMD ["dotnet", "test", "Firmness.Tests/Firmness.Tests.csproj", "--no-restore"]
+CMD ["dotnet", "test", "Firmness.Tests/Firmness.Tests.csproj", "--no-restore", "--logger", "console;verbosity=detailed"]
